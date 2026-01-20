@@ -1,6 +1,7 @@
 import requests
 import xml.etree.ElementTree as ET
 import logging
+from urllib.parse import unquote
 
 class SitemapCrawler:
     """Recursively crawls sitemaps."""
@@ -39,7 +40,7 @@ class SitemapCrawler:
             resp.raise_for_status()
             root = ET.fromstring(resp.content)
             ns = {'ns': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
-            return [loc.text for loc in root.findall('.//ns:loc', ns)]
+            return [unquote(loc.text).strip() for loc in root.findall('.//ns:loc', ns) if loc.text]
         except Exception as e:
             logging.error(f"Inaccessible sitemap: {url} ({e})")
             self.inaccessible_sitemaps.append(url)

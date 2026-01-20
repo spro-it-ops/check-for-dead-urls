@@ -29,18 +29,19 @@ class SitemapCheckerApp:
         print(f"\n{msg}\n")
         logging.info(msg)
 
-    def run(self, limit_requests=None):
+    def run(self):
         # 1. Crawl Sitemaps
         all_urls, dead_sitemaps, levels = self.crawler.fetch_all(self.config.sitemap_url)
+
+        if self.config.limit_requests:
+            all_urls = all_urls[:self.config.limit_requests]
+            logging.info('Requests capped at: %d', len(all_urls))
 
         # 2. Load Previous State
         checked_urls_set, existing_statuses = self.report_manager.load_checked_urls()
 
         # 3. Calculate urls needed to check
         urls_to_check = [u for u in all_urls if u not in checked_urls_set]
-
-        if limit_requests:
-            urls_to_check = urls_to_check[:limit_requests]
 
         # 4. Check URLs
         if urls_to_check:

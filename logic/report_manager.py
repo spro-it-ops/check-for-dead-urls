@@ -1,6 +1,7 @@
 import os
 import csv
 import logging
+from urllib.parse import unquote
 
 class ReportManager:
     """Handles CSV reading/writing and directory management."""
@@ -41,7 +42,7 @@ class ReportManager:
                 count = 0
                 for row in reader:
                     if len(row) >= 2:
-                        url = row[1]
+                        url = unquote(row[1]).strip()
                         code = int(row[2])
                         checked_urls.add(url)
                         url_statuses.append((url, code))

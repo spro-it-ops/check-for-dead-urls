@@ -5,6 +5,7 @@ class Config:
     def __init__(self, sitemap_url, resume=False):
         self.sitemap_url = sitemap_url
         self.resume = resume
+        self.limit_requests = None
 
         self.log_dir = "log"
         self.reports_dir = "reports"

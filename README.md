@@ -54,3 +54,7 @@ python run.py -r
 
 - Reports will be saved in the `reports/` directory.
 - Logs will be saved in the `log/` directory.
+
+## Note
+
+- For testing purposes, the number of URLs to check can be capped by assigning a numeric value (natural number) to the variable `self.limit_requests` in `logic.config.py`.

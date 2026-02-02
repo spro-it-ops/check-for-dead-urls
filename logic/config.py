@@ -2,10 +2,11 @@ import os
 
 class Config:
     """Holds configuration paths and settings."""
-    def __init__(self, sitemap_url, resume=False):
+    def __init__(self, sitemap_url, resume=False, num_workers=10):
         self.sitemap_url = sitemap_url
         self.resume = resume
         self.limit_requests = None
+        self.num_workers = num_workers  # Add this line
 
         self.log_dir = "log"
         self.reports_dir = "reports"

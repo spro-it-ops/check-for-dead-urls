@@ -31,17 +31,20 @@ class SitemapCheckerApp:
 
     def run(self):
         # 1. Crawl Sitemaps
-        all_urls, dead_sitemaps, levels = self.crawler.fetch_all(self.config.sitemap_url)
+        all_urls_with_path, dead_sitemaps, levels, max_depth = self.crawler.fetch_all(self.config.sitemap_url)
+
+        # Set max_depth in report_manager for proper column generation
+        self.report_manager.set_max_depth(max_depth)
 
         if self.config.limit_requests:
-            all_urls = all_urls[:self.config.limit_requests]
-            logging.info('Requests capped at: %d', len(all_urls))
+            all_urls_with_path = all_urls_with_path[:self.config.limit_requests]
+            logging.info('Requests capped at: %d', len(all_urls_with_path))
 
         # 2. Load Previous State
         checked_urls_set, existing_statuses = self.report_manager.load_checked_urls()
 
-        # 3. Calculate urls needed to check
-        urls_to_check = [u for u in all_urls if u not in checked_urls_set]
+        # 3. Calculate urls needed to check (filter by URL, keep path info)
+        urls_to_check = [(url, path) for url, path in all_urls_with_path if url not in checked_urls_set]
 
         # 4. Check URLs
         if urls_to_check:
@@ -62,7 +65,7 @@ class SitemapCheckerApp:
         self.report_manager.export_sitemap_levels(levels)
 
     def _summarize(self, statuses):
-        counts = Counter(status for _, status in statuses)
+        counts = Counter(status for _, status, *_ in statuses)
         print("\nSummary of HTTP status codes:")
         for status, count in sorted(counts.items()):
             print(f"Status {status}: {count} URLs")
@@ -72,3 +75,28 @@ class SitemapCheckerApp:
 
         logging.info(f"Status counts: {counts}")
         logging.info(f"Number of inaccessible URLs: {inaccessible}")
+
+    @staticmethod
+    def can_resume():
+        """Check if a resume is possible (previous report exists)."""
+        import os
+        return os.path.exists("reports/url_checks.csv")
+
+    @staticmethod
+    def get_resume_info():
+        """Get information about the previous run for resume."""
+        import os
+        import csv
+
+        csv_path = "reports/url_checks.csv"
+        if not os.path.exists(csv_path):
+            return None
+
+        try:
+            with open(csv_path, "r", encoding="utf-8") as f:
+                reader = csv.reader(f)
+                next(reader, None)  # Skip header
+                count = sum(1 for _ in reader)
+            return count
+        except Exception:
+            return None

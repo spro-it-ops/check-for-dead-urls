@@ -1,6 +1,6 @@
 import os
 import argparse
-from logic.app import SitemapCheckerApp
+from app.app import SitemapCheckerApp
 
 
 def print_usage_instructions():

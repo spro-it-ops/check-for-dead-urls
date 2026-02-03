@@ -1,10 +1,10 @@
 import logging
 from collections import Counter
-from logic.config import Config
-from logic.logger_setup import LoggerSetup
-from logic.report_manager import ReportManager
-from logic.sitemap_crawler import SitemapCrawler
-from logic.url_checker import UrlChecker
+from app.config import Config
+from app.logger_setup import LoggerSetup
+from app.report_manager import ReportManager
+from app.sitemap_crawler import SitemapCrawler
+from app.url_checker import UrlChecker
 
 class SitemapCheckerApp:
     """Main application controller."""

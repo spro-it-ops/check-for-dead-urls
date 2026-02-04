@@ -98,6 +98,13 @@ class ReportManager:
             writer = csv.writer(f)
             writer.writerow(self._get_csv_header())
 
+        # Initialize failure report with reason column
+        with open(self.config.failed_urls_csv, "w", newline='', encoding="utf-8") as f:
+            writer = csv.writer(f)
+            header = self._get_csv_header()
+            header.append("failure_reason")
+            writer.writerow(header)
+
     def append_check_result(self, index, url, status_code, sitemap_path):
         """Appends a single check result to the CSV file."""
         with open(self.config.url_checks_csv, "a", newline='', encoding="utf-8") as f:
@@ -107,6 +114,25 @@ class ReportManager:
             padded_path = sitemap_path + [""] * (self.max_depth - len(sitemap_path))
             row.extend(padded_path)
             row.extend([url, status_code])
+            writer.writerow(row)
+
+    def append_failure_result(self, index, url, status_code, sitemap_path, reason):
+        """Appends a failed check result with reason to the failure report."""
+        # Check if file exists to handle resume cases where it might be missing
+        file_exists = os.path.exists(self.config.failed_urls_csv)
+
+        with open(self.config.failed_urls_csv, "a", newline='', encoding="utf-8") as f:
+            writer = csv.writer(f)
+            if not file_exists:
+                header = self._get_csv_header()
+                header.append("failure_reason")
+                writer.writerow(header)
+
+            row = [index]
+            # Pad sitemap_path to max_depth
+            padded_path = sitemap_path + [""] * (self.max_depth - len(sitemap_path))
+            row.extend(padded_path)
+            row.extend([url, status_code, reason])
             writer.writerow(row)
 
     def export_dead_sitemaps(self, inaccessible_sitemaps):

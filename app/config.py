@@ -15,3 +15,4 @@ class Config:
         self.url_checks_csv = os.path.join(self.reports_dir, "url_checks.csv")
         self.dead_sitemaps_csv = os.path.join(self.reports_dir, "dead_sitemaps.csv")
         self.sitemap_levels_csv = os.path.join(self.reports_dir, "sitemap_levels.csv")
+        self.failed_urls_csv = os.path.join(self.reports_dir, "failed_urls.csv")
